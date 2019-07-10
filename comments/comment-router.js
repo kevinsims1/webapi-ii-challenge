@@ -15,7 +15,8 @@ router.post('/', async (req, res) => {
 
 router.post('/:id/comments', async (req, res) => {
   try {
-      const comment = await db.insertComment(...req.body)
+      
+      const comment = await db.insertComment({...req.body, post_id: req.params.id})
       res.status(201).json(comment)
   } catch (error) {
       res.status(400).json({errorMessage: 'bad'})
@@ -26,7 +27,6 @@ router.get('/', async (req, res) => {
     try {
       res.status(200).json(db);
     } catch (error) {
-      // log error to database
       console.log(error);
       res.status(500).json({
         message: 'Error retrieving the db',
@@ -53,7 +53,7 @@ router.get('/', async (req, res) => {
   router.get('/:id/comments', async (req, res) => { 
     const { id } = req.params;
     
-    db.findCommentById(id)
+    db.findPostComments(id)
         .then(messages => {
             if(messages && messages.length){
             res.status(200).json(messages);
@@ -95,9 +95,11 @@ router.get('/', async (req, res) => {
       // log error to database
       console.log(error);
       res.status(500).json({
-        message: 'Error updating the id',
+        message: 'Error updating the post',
       });
     }
   });
+
+  
 
 module.exports = router
